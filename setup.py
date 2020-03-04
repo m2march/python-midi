@@ -15,6 +15,7 @@ __base__ = {
     'ext_modules':[],
     'ext_package':'',
     'scripts':['scripts/mididump.py', 'scripts/mididumphw.py', 'scripts/midiplay.py'],
+    'install_requires':['six'],
 }
 
 # this kludge ensures we run the build_ext first before anything else
@@ -22,6 +23,7 @@ __base__ = {
 class Install_Command_build_ext_first(setuptools.command.install.install):
     def run(self):
         self.run_command("build_ext")
+        setuptools.command.install.install.do_egg_install(self)
         return setuptools.command.install.install.run(self)
 
 def setup_alsa(ns):
@@ -53,6 +55,7 @@ def setup_alsa(ns):
     ns['py_modules'].append('midi.sequencer.sequencer_alsa')
     ns['ext_package'] = 'midi.sequencer'
     ns['cmdclass'] = {'install': Install_Command_build_ext_first}
+    ns['install_requires'] = ['six']
 
 def configure_platform():
     from sys import platform
@@ -66,6 +69,8 @@ def configure_platform():
     return ns
 
 if __name__ == "__main__":
-    setup(**configure_platform())
+    cfg = configure_platform()
+    print(cfg)
+    setup(**cfg)
 
 
